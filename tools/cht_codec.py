@@ -5,7 +5,14 @@
 import glob, re, json, os
 
 TAG_RE = re.compile(r'^(\[[0-9]+:[A-Z]{4}#[0-9]+\])\t(.*)$')
-TABLE = "dumps/cht_table.json"
+# 歷史 workspace 用 dumps/cht_table.json；公開 repo 則保存於 data/cht_table.json。
+# 讓工具可從任意 cwd 重現，不依賴開發機的 dumps/ 目錄。
+_REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TABLE = os.environ.get("MI2_CHT_TABLE") or (
+    os.path.join(_REPO, "data", "cht_table.json")
+    if os.path.exists(os.path.join(_REPO, "data", "cht_table.json"))
+    else os.path.join("dumps", "cht_table.json")
+)
 PERROW = 93          # trail 0xA1..0xFD
 LEAD0 = 0xA1
 TRAIL0 = 0xA1
