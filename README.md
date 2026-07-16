@@ -5,13 +5,14 @@
 
 ## 現況
 
-本專案處於**探勘＋環境建置**階段。已完成：
+已完成：
 
 - ScummVM 對 MI2 的 CJK 支援探勘（`GID_MONKEY2` 原生在 ZH_CHN 白名單；繁體 ZH_TWN 被 gate 在 v7+ 需 patch）。
-- 抽字管線驗證：`scummtr` 支援 `monkey2`，抽出 7945 行、round-trip byte-perfect。
-- **PoC：零引擎 patch 顯示中文**——放 `chinese_gb16x12.fnt` 即自動偵測 ZH_CHN，簡體中文正確渲染（見 `docs/screenshots/poc_zhcn_copyprotect.png`）。
+- 抽字管線：`scummtr` 支援 `monkey2`，抽出 7945 行、round-trip byte-perfect。
+- 繁體引擎路徑（`patches/0001`）：GBK 線性 index + numChar 23940 + GBK 字型 → 繁體上屏。
+- **全量翻譯（7499 行）已完成並端到端驗證**：63 批 sonnet 平行翻譯（統一譯名表零漂移）→ CJK-aware scummtr 注入（`patches/0002`）→ 引擎正確渲染繁中（見 `docs/screenshots/poc_full_translation_ingame.png`）。譯文在 [`translations/mi2_cht.tsv`](translations/mi2_cht.tsv)。
 
-詳見 [`docs/計畫書-plan.md`](docs/計畫書-plan.md)。
+**待辦**：走進遊戲的 NPC 對白 playtest、CJK 斷行/對話框/字距微調、防拷處理、三平台打包。詳見 [`docs/計畫書-plan.md`](docs/計畫書-plan.md)。
 
 ## 路線
 
