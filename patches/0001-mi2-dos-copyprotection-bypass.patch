@@ -1,0 +1,19 @@
+diff --git a/engines/scumm/script.cpp b/engines/scumm/script.cpp
+index ff91a786..b1a60a80 100644
+--- a/engines/scumm/script.cpp
++++ b/engines/scumm/script.cpp
+@@ -792,6 +792,14 @@ void ScummEngine::writeVar(uint var, int value) {
+ 
+ 		_scummVars[var] = value;
+ 
++		// CHT: MI2 DOS 防拷自動略過。room 108 的 SCRP_0130 先把正確答案寫進 Var[490]，
++		// 隨即比對 if (Var[518] != Var[490])（Var[518]=玩家輸入）→ 不等就退出/重試。
++		// 防拷關閉(copy_protection=false)時，寫 Var[490] 同步鏡射到 Var[518] → 永遠相等 → 自動過關。
++		if (var == 490 && _game.id == GID_MONKEY2 && _game.platform == Common::kPlatformDOS &&
++			!_copyProtection && _currentRoom == 108) {
++			_scummVars[518] = value;
++		}
++
+ 		if ((_varwatch == (int)var || _varwatch == 0) && _currentScript < NUM_SCRIPT_SLOT) {
+ 			if (vm.slot[_currentScript].number < 100)
+ 				debug(1, "vars[%d] = %d (via script-%d)", var, value, vm.slot[_currentScript].number);
