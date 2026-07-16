@@ -24,16 +24,11 @@ def translatable(body):
 def ctrlcount(body):
     return len(ctrl_re.findall(body))
 
+import cht_codec
+_CH2CODE = cht_codec.load_table()
 def enc_gbk(txt_bytes):
-    # txt_bytes: utf-8 中文 + 字面 \255 ASCII。逐字元 → GBK(trail 0x5C 雙寫) / ASCII 原樣
-    out = bytearray()
-    for ch in txt_bytes.decode('utf-8'):
-        if ord(ch) < 128:
-            out += ch.encode('latin-1')
-        else:
-            for b in ch.encode('gbk'):
-                out += b'\x5c\x5c' if b == 0x5c else bytes([b])
-    return bytes(out)
+    # 改用 cht_codec 自訂碼(全位元組 0xA1-0xFD，無 ASCII 碰撞)。名稱沿用。
+    return cht_codec.encode_line(txt_bytes.decode('utf-8'), _CH2CODE)
 
 # 原 dump 全行 + 可譯行的 (tag,body) 序列
 raw = open(SRC, 'rb').read()
