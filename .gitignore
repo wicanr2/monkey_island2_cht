@@ -1,0 +1,20 @@
+# 遊戲本體與衍生（絕不入 git，patch-only）
+MONKEY2.*
+*.LFL
+*.ROM
+*.IMS
+*.EXE
+SAVEGAME.*
+# 手冊版權掃描（© LucasArts / 軟體世界；不推公開 repo）
+docs/manual-scans/
+*.jpg
+*.jpeg
+# build / 大型來源
+scummvm-src/
+scummvm/
+build/
+*.o
+*.bin
+dist-all/
+out/
+__pycache__/
