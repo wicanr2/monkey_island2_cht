@@ -6,82 +6,61 @@
 <title>Mix 'N' Mojo — 巫毒材料比例轉盤（猴島小英雄 2 密碼盤模擬）</title>
 <style>
   :root{
-    --paper:#e9dcae; --paper2:#ddca90; --ink:#3a2a12; --ink2:#5b4426;
-    --disc:#c9a86a; --disc2:#b6924f; --ring:#8a6a34; --accent:#7a1f14;
-    --gold:#8a6a1f; --win:#f4ecd0; --shadow:rgba(40,25,5,.35);
+    --paper:#e9dcae; --ink:#3a2a12; --ink2:#5b4426; --accent:#7a1f14;
+    --line:#c9b47e; --win:#f4ecd0; --shadow:rgba(40,25,5,.35);
   }
   *{box-sizing:border-box}
   html,body{margin:0}
   body{
     font-family:"Noto Serif CJK TC","Songti TC","PMingLiU",serif;
-    color:var(--ink);
-    background:
-      radial-gradient(120% 90% at 50% 0%, #efe3b8 0%, #e2d29a 55%, #cdb87e 100%);
-    min-height:100vh; line-height:1.7;
+    color:var(--ink); line-height:1.7; min-height:100vh;
+    background:radial-gradient(120% 90% at 50% 0%, #efe3b8 0%, #e2d29a 55%, #cdb87e 100%);
   }
-  .wrap{max-width:960px;margin:0 auto;padding:26px 18px 60px}
-  header h1{
-    font-size:clamp(24px,5vw,40px); margin:.2em 0 .1em;
-    letter-spacing:.04em; color:var(--accent);
-    text-shadow:1px 1px 0 #f7efcf;
-  }
-  header .sub{font-size:15px;color:var(--ink2);letter-spacing:.25em}
+  .wrap{max-width:980px;margin:0 auto;padding:26px 18px 60px}
   header .en{font-size:13px;color:#7c6236;letter-spacing:.32em;text-transform:uppercase}
-  .lede{
-    background:rgba(255,250,225,.5);border:1px solid #c9b47e;border-radius:10px;
-    padding:14px 18px;margin:18px 0 8px;font-size:15px;
-  }
+  header h1{font-size:clamp(24px,5vw,40px);margin:.2em 0 .1em;letter-spacing:.04em;color:var(--accent);text-shadow:1px 1px 0 #f7efcf}
+  header .sub{font-size:15px;color:var(--ink2);letter-spacing:.25em}
+  .lede{background:rgba(255,250,225,.5);border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin:18px 0 8px;font-size:15px}
   .lede b{color:var(--accent)}
   .layout{display:flex;gap:26px;flex-wrap:wrap;align-items:flex-start;margin-top:14px}
-  .wheelcol{flex:1 1 420px;min-width:320px;display:flex;flex-direction:column;align-items:center}
+  .wheelcol{flex:1 1 460px;min-width:320px;display:flex;flex-direction:column;align-items:center}
   .sidecol{flex:1 1 300px;min-width:280px}
   /* 轉盤 */
-  .stage{position:relative;width:min(92vw,460px);aspect-ratio:1;user-select:none;touch-action:none}
-  .stage svg{width:100%;height:100%;display:block;cursor:grab;filter:drop-shadow(0 6px 14px var(--shadow))}
-  .stage svg.drag{cursor:grabbing}
-  .marker{
-    position:absolute;top:-6px;left:50%;transform:translateX(-50%);
-    width:0;height:0;border-left:15px solid transparent;border-right:15px solid transparent;
-    border-top:24px solid var(--accent);z-index:5;
-    filter:drop-shadow(0 2px 1px rgba(0,0,0,.4));
-  }
+  .stage{position:relative;width:min(92vw,480px);aspect-ratio:1;user-select:none;touch-action:none}
+  .disc{position:absolute;inset:0;width:100%;height:100%;-webkit-user-drag:none;user-drag:none;pointer-events:none}
+  #bottom{filter:drop-shadow(0 6px 14px var(--shadow));transition:transform .28s cubic-bezier(.2,.9,.3,1.2)}
+  #bottom.dragging{transition:none}
+  #top{pointer-events:none}
+  .hit{position:absolute;inset:0;cursor:grab;border-radius:50%;z-index:6}
+  .hit.grab{cursor:grabbing}
+  .marker{position:absolute;top:-4px;left:50%;transform:translateX(-50%);width:0;height:0;
+    border-left:15px solid transparent;border-right:15px solid transparent;border-top:26px solid var(--accent);
+    z-index:7;filter:drop-shadow(0 2px 1px rgba(0,0,0,.4))}
   .ctrls{display:flex;gap:10px;align-items:center;margin-top:16px;flex-wrap:wrap;justify-content:center}
-  button{
-    font-family:inherit;font-size:15px;cursor:pointer;
-    background:linear-gradient(#f2e7bf,#d9c48c);color:var(--ink);
-    border:1px solid #9c8146;border-radius:8px;padding:9px 16px;
-    box-shadow:0 2px 0 #9c8146; transition:transform .05s;
-  }
+  button{font-family:inherit;font-size:15px;cursor:pointer;background:linear-gradient(#f2e7bf,#d9c48c);color:var(--ink);
+    border:1px solid #9c8146;border-radius:8px;padding:9px 16px;box-shadow:0 2px 0 #9c8146;transition:transform .05s}
   button:active{transform:translateY(2px);box-shadow:0 0 0 #9c8146}
   button.primary{background:linear-gradient(#8f271a,#6c1a10);color:#f6e9c9;border-color:#4a1109;box-shadow:0 2px 0 #4a1109}
-  .pos{font-size:14px;color:var(--ink2);min-width:96px;text-align:center}
+  .pos{font-size:14px;color:var(--ink2);min-width:112px;text-align:center}
   .pos b{font-size:20px;color:var(--accent)}
-  /* 讀數表 */
-  .panel{background:rgba(255,250,225,.55);border:1px solid #c9b47e;border-radius:12px;padding:16px 18px;margin-bottom:16px}
+  .hint{font-size:13px;color:#8a7448;margin-top:10px;text-align:center;max-width:460px}
+  .panel{background:rgba(255,250,225,.55);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:16px}
   .panel h2{margin:0 0 10px;font-size:18px;color:var(--accent);letter-spacing:.05em}
   table{width:100%;border-collapse:collapse;font-size:15px}
-  th,td{padding:7px 8px;text-align:left;border-bottom:1px solid #cdb884}
-  th{color:#7c6236;font-weight:600;font-size:13px;letter-spacing:.05em}
-  td.num{font-family:"DejaVu Sans Mono",monospace;font-size:18px;color:var(--accent);font-weight:700;text-align:right;letter-spacing:.06em}
-  tr.hot td{background:rgba(122,31,20,.12)}
-  tr.hot td:first-child{position:relative}
-  tr.hot td:first-child::before{content:"▶";color:var(--accent);position:absolute;left:-2px}
+  th,td{padding:6px 8px;text-align:left;border-bottom:1px solid #cdb884}
+  th{color:#7c6236;font-weight:600;font-size:13px}
+  td.num{font-family:"DejaVu Sans Mono",monospace;font-size:17px;color:var(--accent);font-weight:700;text-align:right;letter-spacing:.06em}
+  tr.hot td{background:rgba(122,31,20,.14)}
   .en-r{color:#8a7448;font-size:12px}
-  /* 挑戰 */
-  .challenge .q{font-size:16px;margin:2px 0 12px}
-  .challenge .icons{display:flex;gap:14px;flex-wrap:wrap;margin:8px 0 14px}
-  .chip{display:flex;align-items:center;gap:8px;background:#f4ecd0;border:1px solid #c3ac72;border-radius:10px;padding:8px 12px;font-size:14px}
-  .chip .e{font-size:26px;line-height:1}
-  .chip small{display:block;color:#8a7448;font-size:11px}
+  .challenge .q{font-size:15px;margin:2px 0 12px}
   .challenge input{font-family:"DejaVu Sans Mono",monospace;font-size:20px;width:120px;padding:7px 10px;border:1px solid #9c8146;border-radius:8px;text-align:center;background:#fbf6e2}
-  .verdict{margin-top:12px;font-size:16px;min-height:26px;font-weight:600}
-  .verdict.ok{color:#2e6b2e}
-  .verdict.no{color:var(--accent)}
-  .hint{font-size:13px;color:#8a7448;margin-top:8px}
-  footer{margin-top:34px;font-size:12.5px;color:#7c6236;border-top:1px solid #c9b47e;padding-top:14px}
+  .verdict{margin-top:12px;font-size:15px;min-height:24px;font-weight:600}
+  .verdict.ok{color:#2e6b2e}.verdict.no{color:var(--accent)}
+  .chhint{font-size:13px;color:#8a7448;margin-top:8px}
+  footer{margin-top:34px;font-size:12.5px;color:#7c6236;border-top:1px solid var(--line);padding-top:14px}
   footer a{color:var(--accent)}
   a.back{color:var(--accent);font-size:14px;text-decoration:none}
-  @media (max-width:560px){ th:nth-child(3),td:nth-child(3){display:none} }
+  @media (max-width:560px){ th:nth-child(2),td:nth-child(2){display:none} }
 </style>
 </head>
 <body>
@@ -94,60 +73,61 @@
 
   <div class="lede">
     1991 年的 DOS 遊戲用一種很「實體」的方式防拷貝：正版盒裝裡附一個<b>雙層可旋轉紙轉盤</b>。開場劇情演完，
-    遊戲會丟給你兩個巫毒配料圖案跟一道「配方」，你得轉動轉盤讓兩個圖案對齊，才能讀到要輸入的密碼。
-    盜拷磁片的人沒這張轉盤，就永遠卡在開頭——手冊裡那隻猴子還特地問你「<b>你過不了關而鬱卒嗎？</b>」在調侃這件事。
-    這是照台版手冊掃描件重製的可玩版本，轉轉看吧。
+    遊戲丟給你兩個巫毒配料圖案跟一道「配方」，你得轉動轉盤讓兩個圖案對齊，才能從配方視窗讀到要輸入的密碼。
+    盜拷磁片的人沒這張盤，就永遠卡在開頭——手冊裡那隻猴子還特地問你「<b>你過不了關而鬱卒嗎？</b>」在調侃這件事。
+    <br>下面是<b>真正的雙層轉盤</b>：底盤與上盤都是實體轉盤的原圖，密碼數字直接從上盤的透明視窗透出來——就跟你手上那張紙盤一模一樣。抓著轉盤轉轉看吧。
   </div>
 
   <div class="layout">
     <div class="wheelcol">
       <div class="stage">
-        <div class="marker" title="對齊窗口"></div>
-        <svg id="wheel" viewBox="0 0 600 600" aria-label="巫毒轉盤"></svg>
+        <div class="marker" title="讀數指標"></div>
+        <img id="bottom" class="disc" src="assets/wheel-bottom.png" alt="底盤（配料圖示與密碼數字）" draggable="false">
+        <img id="top"    class="disc" src="assets/wheel-top.png"    alt="上盤（MIX N MOJO 配方視窗）" draggable="false">
+        <div class="hit" id="hit"></div>
       </div>
       <div class="ctrls">
         <button id="ccw" title="逆時針轉一格">◀ 逆轉</button>
-        <div class="pos">位置 <b id="posn">1</b> / 15</div>
+        <div class="pos">第 <b id="posn">5</b> / 15 組</div>
         <button id="cw" title="順時針轉一格">順轉 ▶</button>
       </div>
-      <div class="hint">用滑鼠／手指直接抓著轉盤拖曳，或按左右鈕逐格轉。放開會自動吸附到最近的一格。</div>
+      <div class="hint">用滑鼠／手指抓著轉盤直接拖曳，或按左右鈕逐格轉。放開會自動吸附到最近的一格，密碼就會端正地出現在七個配方視窗裡。</div>
     </div>
 
     <div class="sidecol">
       <div class="panel">
-        <h2>配方讀數（目前位置）</h2>
+        <h2>配方讀數（目前這一格）</h2>
         <table id="recipeTable">
           <thead><tr><th>配方</th><th>原名</th><th style="text-align:right">密碼</th></tr></thead>
           <tbody></tbody>
         </table>
+        <div class="chhint">表中數字＝轉盤目前七個視窗透出的密碼，兩者同步。</div>
       </div>
 
       <div class="panel challenge">
         <h2>挑戰模式</h2>
-        <div class="q" id="chQ">模擬遊戲的防拷考題：轉盤對齊後把密碼填進去。</div>
-        <div class="icons" id="chIcons"></div>
+        <div class="q" id="chQ"></div>
         <div>
           密碼：<input id="chInput" inputmode="numeric" placeholder="NN/NN" autocomplete="off">
           <button class="primary" id="chCheck">驗證</button>
           <button id="chNew">換一題</button>
         </div>
         <div class="verdict" id="chVerdict"></div>
-        <div class="hint" id="chHint"></div>
+        <div class="chhint" id="chHint"></div>
       </div>
     </div>
   </div>
 
   <footer>
     <p><a class="back" href="../../">← 回中文化專案</a></p>
-    <p>本頁為<b>玩家自製重繪</b>的教學／懷舊用途模擬器，圖示皆為重新設計，未使用原版轉盤掃描圖檔。
-       原始《Monkey Island 2: LeChuck's Revenge》與 Mix 'N' Mojo 轉盤 © 1991 LucasArts / Lucasfilm Games，版權歸原權利人所有。</p>
-    <p>密碼對照資料整理自公開流通的 code wheel 答案表；小提醒：在現代 ScummVM 中把「Enable copy protection」保持關閉，直接輸入任意完整答案即可通關，本轉盤純屬體驗當年解謎的樂趣。</p>
+    <p>本頁為《Monkey Island 2: LeChuck's Revenge》玩家社群用於<b>懷舊與教學</b>的密碼盤模擬器，轉盤圖為實體 Mix 'N' Mojo 轉盤原圖。
+       《Monkey Island 2》與 Mix 'N' Mojo 轉盤 © 1991 LucasArts / Lucasfilm Games，版權歸原權利人所有；此處僅作非商業性的保存與展示。</p>
+    <p>小提醒：在現代 ScummVM 中把「Enable copy protection」保持關閉，走到防拷畫面時直接輸入任意完整答案（四個數字）即可通關，本轉盤純屬體驗當年解謎的樂趣。全部密碼對照另存於 <a href="../copyprotection-answer.md">docs/copyprotection-answer.md</a>。</p>
   </footer>
 </div>
 
 <script>
-/* ---------- 資料 ---------- */
-// 15 個旋轉位置 × 7 配方，數字整理自公開 code wheel 答案表（與台版手冊掃描件位置 0 相符）
+/* 15 個位置 × 7 配方(公開 code wheel 答案表;與轉盤真圖逐格對應) */
 const OFFSETS = [
 {"Worms":[27,12],"Gout":[56,47],"Scurvy":[12,45],"Warts":[50,38],"Trench Mouth":[32,29],"Tattoo Rash":[52,20],"Peg Leg Rot":[58,55]},
 {"Worms":[28,43],"Gout":[56,16],"Scurvy":[32,44],"Warts":[19,12],"Trench Mouth":[60,16],"Tattoo Rash":[29,51],"Peg Leg Rot":[23,25]},
@@ -165,238 +145,82 @@ const OFFSETS = [
 {"Worms":[33,54],"Gout":[14,12],"Scurvy":[24,37],"Warts":[25,31],"Trench Mouth":[15,54],"Tattoo Rash":[50,47],"Peg Leg Rot":[31,17]},
 {"Worms":[18,36],"Gout":[34,39],"Scurvy":[28,31],"Warts":[31,48],"Trench Mouth":[26,12],"Tattoo Rash":[50,57],"Peg Leg Rot":[11,48]}
 ];
-
 const RECIPES = [
-  {en:"Worms",       zh:"蛔蟲"},
-  {en:"Gout",        zh:"痛風"},
-  {en:"Scurvy",      zh:"壞血病"},
-  {en:"Warts",       zh:"疣"},
-  {en:"Trench Mouth",zh:"戰壕口炎"},
-  {en:"Tattoo Rash", zh:"刺青疹"},
-  {en:"Peg Leg Rot", zh:"義肢腐病"},
+  {en:"Worms",zh:"蛔蟲"},{en:"Gout",zh:"痛風"},{en:"Scurvy",zh:"壞血病"},{en:"Warts",zh:"疣"},
+  {en:"Trench Mouth",zh:"戰壕口炎"},{en:"Tattoo Rash",zh:"刺青疹"},{en:"Peg Leg Rot",zh:"義肢腐病"}
 ];
+const N=15, STEP=24;
+/* 校準:底盤 0° 時,視窗顯示第 5 組(index 4);CSS 順時針每 +24° → 組序 +1 */
+const BASE=4;
+function cfgFromRot(rot){ return ((BASE + Math.round(rot/STEP)) % N + N) % N; }
 
-// 15 種配料，各有上層(內盤)/下層(外盤)兩個名字；圖示為重新設計的 emoji
-const ING = [
-  {L:"A", outer:{zh:"死貓",   e:"🐱"}, inner:{zh:"蛇汗",       e:"🐍"}},
-  {L:"B", outer:{zh:"口氣糖", e:"🍬"}, inner:{zh:"格羅格酒",   e:"🍺"}},
-  {L:"C", outer:{zh:"味精",   e:"🧂"}, inner:{zh:"用過的手帕", e:"🤧"}},
-  {L:"D", outer:{zh:"螃蟹頭皮",e:"🦀"}, inner:{zh:"巫毒小幫手", e:"🧴"}},
-  {L:"E", outer:{zh:"蝙蝠蠟", e:"🦇"}, inner:{zh:"蜘蛛肺",     e:"🕷️"}},
-  {L:"F", outer:{zh:"毛球",   e:"🧶"}, inner:{zh:"豬腳",       e:"🐷"}},
-  {L:"G", outer:{zh:"方糖咖啡",e:"☕"}, inner:{zh:"臭鼬萃取",   e:"🦨"}},
-  {L:"H", outer:{zh:"毒蕈",   e:"🍄"}, inner:{zh:"貓頭鷹食繭", e:"🦉"}},
-  {L:"I", outer:{zh:"秋葵",   e:"🌱"}, inner:{zh:"嚼過口香糖", e:"🫧"}},
-  {L:"J", outer:{zh:"毒橡樹", e:"☘️"}, inner:{zh:"口水",       e:"💧"}},
-  {L:"K", outer:{zh:"掘墓人襪子",e:"🧦"}, inner:{zh:"鯊魚唇",   e:"🦈"}},
-  {L:"L", outer:{zh:"脹壁蝨", e:"🐛"}, inner:{zh:"魚尾",       e:"🐟"}},
-  {L:"M", outer:{zh:"腋臭男", e:"💪"}, inner:{zh:"義肢亮光劑", e:"🦵"}},
-  {L:"N", outer:{zh:"鴨腳",   e:"🦆"}, inner:{zh:"起司捲",     e:"🧀"}},
-  {L:"O", outer:{zh:"犀牛趾甲",e:"🦏"}, inner:{zh:"水果雞尾酒", e:"🍹"}},
-];
-const N = ING.length;            // 15
-const STEP = 360 / N;            // 24°
-const C = 300;                   // 圓心
-const SVGNS = "http://www.w3.org/2000/svg";
+const bottom=document.getElementById("bottom");
+const hit=document.getElementById("hit");
+let rot=0;          // 底盤 CSS 旋轉角(順時針為正)
+let offset=BASE;
 
-/* ---------- 幾何小工具（角度=從正上方順時針） ---------- */
-function pt(angleDeg, r){
-  const a = (angleDeg - 90) * Math.PI/180;
-  return [C + r*Math.cos(a), C + r*Math.sin(a)];
-}
-function el(name, attrs){
-  const n = document.createElementNS(SVGNS, name);
-  for(const k in attrs) n.setAttribute(k, attrs[k]);
-  return n;
-}
-
-/* ---------- 建構轉盤 ---------- */
-const svg = document.getElementById("wheel");
-let discG;   // 旋轉群組(內盤本體:底、rim 圖示、骷髏、標誌)
-let rot = 0; // 目前角度
-let offset = 0;
-
-function build(){
-  svg.innerHTML = "";
-  // 外盤底
-  svg.appendChild(el("circle",{cx:C,cy:C,r:292,fill:"var(--paper2)",stroke:"var(--ring)","stroke-width":4}));
-  svg.appendChild(el("circle",{cx:C,cy:C,r:262,fill:"none",stroke:"#a5873f","stroke-width":2,"stroke-dasharray":"2 4"}));
-  // 外盤 15 個配料(固定)
-  for(let i=0;i<N;i++){
-    const ang = i*STEP;
-    const [x,y] = pt(ang, 278);
-    const t = el("text",{x,y:y+9,"text-anchor":"middle","font-size":26});
-    t.textContent = ING[i].outer.e;
-    svg.appendChild(t);
-    const [lx,ly] = pt(ang, 250);
-    const lb = el("text",{x:lx,y:ly+4,"text-anchor":"middle","font-size":9,fill:"#6b5426"});
-    lb.textContent = ING[i].outer.zh;
-    svg.appendChild(lb);
-  }
-
-  // 內盤(可旋轉)
-  discG = el("g",{});
-  discG.appendChild(el("circle",{cx:C,cy:C,r:214,fill:"var(--disc)",stroke:"var(--ring)","stroke-width":3}));
-  discG.appendChild(el("circle",{cx:C,cy:C,r:210,fill:"none",stroke:"#8a6a34","stroke-width":1,opacity:.5}));
-  // rim 15 個上層配料
-  for(let i=0;i<N;i++){
-    const ang = i*STEP;
-    const [x,y] = pt(ang, 196);
-    const t = el("text",{x,y:y+8,"text-anchor":"middle","font-size":22});
-    t.textContent = ING[i].inner.e;
-    discG.appendChild(t);
-    // 位置刻度小點
-    const [dx,dy] = pt(ang+STEP/2, 208);
-    discG.appendChild(el("circle",{cx:dx,cy:dy,r:2,fill:"#7a5c2c"}));
-  }
-  // 內圈裝飾 + 骷髏 + 標誌
-  discG.appendChild(el("circle",{cx:C,cy:C,r:150,fill:"var(--disc2)",stroke:"#8a6a34","stroke-width":2}));
-  discG.appendChild(el("circle",{cx:C,cy:C,r:60,fill:"#e9dcae",stroke:"#8a6a34","stroke-width":2}));
-  const skull = el("text",{x:C,y:C+22,"text-anchor":"middle","font-size":64});
-  skull.textContent = "☠️";
-  discG.appendChild(skull);
-  // 弧形品牌字(上/下)
-  const brandTop = el("text",{"font-size":15,"font-weight":"bold",fill:"var(--accent)","letter-spacing":"3"});
-  const pth1 = el("path",{id:"arcTop",d:`M ${C-108} ${C} A 108 108 0 0 1 ${C+108} ${C}`,fill:"none"});
-  discG.appendChild(pth1);
-  const tp1 = el("textPath",{href:"#arcTop","startOffset":"50%","text-anchor":"middle"});
-  tp1.textContent = "MIX 'N' MOJO";
-  brandTop.appendChild(tp1);
-  discG.appendChild(brandTop);
-
-  const brandBot = el("text",{"font-size":10,fill:"#5b4426","letter-spacing":"2"});
-  const pth2 = el("path",{id:"arcBot",d:`M ${C-120} ${C} A 120 120 0 0 0 ${C+120} ${C}`,fill:"none"});
-  discG.appendChild(pth2);
-  const tp2 = el("textPath",{href:"#arcBot","startOffset":"50%","text-anchor":"middle"});
-  tp2.textContent = "VOODOO INGREDIENT PROPORTION DIAL";
-  brandBot.appendChild(tp2);
-  discG.appendChild(brandBot);
-
-  svg.appendChild(discG);
-
-  // 固定的 7 個配方讀數窗(疊在內盤上、不旋轉、永遠正立)
-  const winG = el("g",{id:"winG"});
-  for(let i=0;i<RECIPES.length;i++){
-    const ang = i*(360/RECIPES.length);
-    const [x,y] = pt(ang, 116);
-    const g = el("g",{});
-    g.appendChild(el("rect",{x:x-33,y:y-17,width:66,height:34,rx:6,fill:"var(--win)",stroke:"#8a6a34","stroke-width":1.2}));
-    const rn = el("text",{x,y:y-4,"text-anchor":"middle","font-size":10,fill:"#5b4426"});
-    rn.textContent = RECIPES[i].zh;
-    g.appendChild(rn);
-    const num = el("text",{x,y:y+11,"text-anchor":"middle","font-size":13,"font-weight":"bold",fill:"var(--accent)","font-family":"monospace"});
-    num.setAttribute("data-recipe", RECIPES[i].en);
-    g.appendChild(num);
-    winG.appendChild(g);
-  }
-  svg.appendChild(winG);
-
-  applyRot();
-  renderNumbers();
-}
-
-function applyRot(){
-  discG.setAttribute("transform", `rotate(${rot} ${C} ${C})`);
-}
-
-// 讀數窗 + 側表更新
+function apply(){ bottom.style.transform=`rotate(${rot}deg)`; }
 function renderNumbers(){
-  const cfg = OFFSETS[offset];
-  // SVG 內窗
-  svg.querySelectorAll("#winG text[data-recipe]").forEach(t=>{
-    const r = t.getAttribute("data-recipe");
-    t.textContent = cfg[r][0] + "/" + cfg[r][1];
-  });
-  // 側邊表格
-  const tb = document.querySelector("#recipeTable tbody");
-  tb.innerHTML = "";
+  const cfg=OFFSETS[offset];
+  const tb=document.querySelector("#recipeTable tbody");
+  tb.innerHTML="";
   RECIPES.forEach(r=>{
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${r.zh}</td><td class="en-r">${r.en}</td>`+
-                   `<td class="num">${cfg[r.en][0]}/${cfg[r.en][1]}</td>`;
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${r.zh}</td><td class="en-r">${r.en}</td><td class="num">${cfg[r.en][0]}/${cfg[r.en][1]}</td>`;
     tb.appendChild(tr);
   });
-  document.getElementById("posn").textContent = offset+1;
+  document.getElementById("posn").textContent=offset+1;
 }
+function snap(){ rot=Math.round(rot/STEP)*STEP; offset=cfgFromRot(rot); apply(); renderNumbers(); }
+function nudge(d){ bottom.classList.remove("dragging"); rot+=d*STEP; snap(); }
 
-/* ---------- 互動:拖曳 + 按鈕 ---------- */
-function snap(){
-  offset = ((Math.round(rot/STEP) % N) + N) % N;
-  rot = offset * STEP;
-  applyRot();
-  renderNumbers();
+document.getElementById("cw").onclick=()=>nudge(+1);
+document.getElementById("ccw").onclick=()=>nudge(-1);
+
+/* 拖曳旋轉 */
+let dragging=false,lastA=0;
+function evAngle(ev){
+  const r=hit.getBoundingClientRect();
+  const cx=r.left+r.width/2, cy=r.top+r.height/2;
+  const px=(ev.touches?ev.touches[0].clientX:ev.clientX)-cx;
+  const py=(ev.touches?ev.touches[0].clientY:ev.clientY)-cy;
+  return Math.atan2(py,px)*180/Math.PI;
 }
-function nudge(dir){ rot += dir*STEP; snap(); }
+function down(ev){ dragging=true; lastA=evAngle(ev); hit.classList.add("grab"); bottom.classList.add("dragging"); ev.preventDefault(); }
+function move(ev){ if(!dragging)return; const a=evAngle(ev); let d=a-lastA; if(d>180)d-=360; if(d<-180)d+=360; rot+=d; lastA=a; apply(); ev.preventDefault(); }
+function up(){ if(!dragging)return; dragging=false; hit.classList.remove("grab"); bottom.classList.add("dragging"); snap(); }
+hit.addEventListener("mousedown",down); window.addEventListener("mousemove",move); window.addEventListener("mouseup",up);
+hit.addEventListener("touchstart",down,{passive:false}); window.addEventListener("touchmove",move,{passive:false}); window.addEventListener("touchend",up);
 
-document.getElementById("cw").onclick  = ()=>nudge(+1);
-document.getElementById("ccw").onclick = ()=>nudge(-1);
-
-let dragging=false, lastA=0;
-function angleFromEvent(ev){
-  const rc = svg.getBoundingClientRect();
-  const cx = rc.left + rc.width/2, cy = rc.top + rc.height/2;
-  const px = (ev.touches?ev.touches[0].clientX:ev.clientX) - cx;
-  const py = (ev.touches?ev.touches[0].clientY:ev.clientY) - cy;
-  return Math.atan2(py, px) * 180/Math.PI;
-}
-function down(ev){ dragging=true; lastA=angleFromEvent(ev); svg.classList.add("drag"); ev.preventDefault(); }
-function move(ev){ if(!dragging)return; const a=angleFromEvent(ev); let d=a-lastA;
-  if(d>180)d-=360; if(d<-180)d+=360; rot+=d; lastA=a; applyRot(); ev.preventDefault(); }
-function up(){ if(!dragging)return; dragging=false; svg.classList.remove("drag"); snap(); }
-
-svg.addEventListener("mousedown",down); window.addEventListener("mousemove",move); window.addEventListener("mouseup",up);
-svg.addEventListener("touchstart",down,{passive:false}); window.addEventListener("touchmove",move,{passive:false}); window.addEventListener("touchend",up);
-
-/* ---------- 挑戰模式 ---------- */
-let chAnswer=null;
+/* 挑戰模式:隨機配方 + 目標組;轉到該組讀真視窗密碼填入 */
+let chAns=null,_seed=1;
+function pick(n){ _seed=(_seed*1103515245+12345+(Date.now()%9973))&0x7fffffff; return _seed%n; }
 function newChallenge(){
-  // 隨機挑一個位置 + 一道配方,依對齊關係決定要對準的上下層圖示
-  const off = Math.floor(seededPick(15));
-  const rIdx = Math.floor(seededPick(RECIPES.length));
-  const innerIdx = Math.floor(seededPick(N));
-  const outerIdx = (innerIdx + off) % N;   // 對齊時:上層 innerIdx 對到下層 outerIdx
-  const recipe = RECIPES[rIdx];
-  chAnswer = {off, recipe, num:OFFSETS[off][recipe.en]};
-
-  document.getElementById("chQ").innerHTML =
-    `遊戲畫面顯示 <b>RECIPE FOR ${recipe.en}</b>（${recipe.zh}）。<br>`+
-    `轉動內盤，把<b>上層</b>的下列圖示對準<b>下層</b>的圖示，再讀出並填入配方窗的密碼：`;
-  document.getElementById("chIcons").innerHTML =
-    `<div class="chip"><span class="e">${ING[innerIdx].inner.e}</span><div>上層（內盤）<small>${ING[innerIdx].inner.zh}</small></div></div>`+
-    `<div class="chip"><span class="e">${ING[outerIdx].outer.e}</span><div>下層（外盤）<small>${ING[outerIdx].outer.zh}</small></div></div>`;
+  const c=pick(N), ri=pick(RECIPES.length), r=RECIPES[ri];
+  chAns={c,r,num:OFFSETS[c][r.en]};
+  document.getElementById("chQ").innerHTML=
+    `遊戲畫面顯示 <b>RECIPE FOR ${r.en}</b>（${r.zh}）。<br>`+
+    `把轉盤轉到 <b>第 ${c+1} 組</b>（上方會顯示目前組數），讀出 <b>${r.en}</b> 視窗透出的密碼並填入：`;
   document.getElementById("chInput").value="";
-  document.getElementById("chVerdict").textContent="";
-  document.getElementById("chVerdict").className="verdict";
-  document.getElementById("chHint").innerHTML =
-    `<span style="cursor:pointer;text-decoration:underline dotted" id="revealHint">看不出來？點這裡把轉盤轉到對齊位置</span>`;
-  document.getElementById("revealHint").onclick=()=>{ rot=off*STEP; snap();
-    document.getElementById("chHint").innerHTML="轉盤已轉到對齊位置，讀出上方對應配方窗的數字即可。"; };
+  const vd=document.getElementById("chVerdict"); vd.textContent=""; vd.className="verdict";
+  document.getElementById("chHint").innerHTML=
+    `<span style="cursor:pointer;text-decoration:underline dotted" id="rv">看不出來？點這裡直接把轉盤轉到第 ${c+1} 組</span>`;
+  document.getElementById("rv").onclick=()=>{ bottom.classList.remove("dragging"); rot=(chAns.c-BASE)*STEP; snap();
+    document.getElementById("chHint").textContent=`轉盤已轉到第 ${chAns.c+1} 組，讀 ${chAns.r.en} 視窗即可。`; };
 }
-// 不用 Math.random(在此環境不可用);以計數器+時間輸入產生變化
-let _seed = 0;
-function seededPick(n){
-  _seed = (_seed*1103515245 + 12345 + Date.now()%9973) & 0x7fffffff;
-  return (_seed % 10000)/10000 * n;
+function check(){
+  const v=document.getElementById("chInput").value.replace(/\s/g,"").replace(/[-,]/g,"/");
+  const want=chAns.num[0]+"/"+chAns.num[1];
+  const vd=document.getElementById("chVerdict");
+  if(v===want){ vd.textContent="✅ 正確！當年這一刻就是通關進入蓋布拉許的冒險。"; vd.className="verdict ok"; }
+  else{ vd.textContent=`❌ 不對。第 ${chAns.c+1} 組的 ${chAns.r.zh}（${chAns.r.en}）密碼是 ${want}。`; vd.className="verdict no"; }
 }
-function checkChallenge(){
-  const v = document.getElementById("chInput").value.replace(/\s/g,"").replace(/[-,]/g,"/");
-  const want = chAnswer.num[0]+"/"+chAnswer.num[1];
-  const vd = document.getElementById("chVerdict");
-  if(v===want){
-    vd.textContent = "✅ 正確！在真實遊戲裡，這時就會通關進入蓋布拉許的冒險。";
-    vd.className="verdict ok";
-  }else{
-    vd.textContent = `❌ 不對。對齊 ${chAnswer.recipe.zh}（${chAnswer.recipe.en}）後，正確密碼是 ${want}。`;
-    vd.className="verdict no";
-  }
-}
-document.getElementById("chCheck").onclick = checkChallenge;
-document.getElementById("chNew").onclick   = newChallenge;
-document.getElementById("chInput").addEventListener("keydown",e=>{ if(e.key==="Enter")checkChallenge(); });
+document.getElementById("chCheck").onclick=check;
+document.getElementById("chNew").onclick=newChallenge;
+document.getElementById("chInput").addEventListener("keydown",e=>{ if(e.key==="Enter")check(); });
 
-/* ---------- 啟動 ---------- */
-build();
-newChallenge();
+/* 啟動 */
+apply(); renderNumbers(); newChallenge();
 </script>
 </body>
 </html>
