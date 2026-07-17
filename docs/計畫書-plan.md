@@ -1,5 +1,7 @@
 # 猴島小英雄 II：里察克的復仇 — 繁體中文化計畫書
 
+> **更新（2026-07-17）：防拷 patch 0001 已移除。** headless 實測確認**原版 ScummVM 已內建 MI2 防拷略過**（upstream `readVar` 在 `copy_protection` 關閉時把 Var[490] 讀成 Var[518]，使驗證恆真；Scott Percival 2026-06 提交）——輸入任意完整答案即過，先前自加的 writeVar 鏡射 patch 屬多餘。整個專案現為**完全零 source patch**。下方 5.9 的 patch 敘述已作廢，以本段為準。
+
 > Monkey Island 2: LeChuck's Revenge (1991, LucasArts) — ScummVM patch-only 繁中化
 > 本檔為探勘後的技術計畫。引擎軌 = **LucasArts SCUMM v5**，非 Sierra AGI/SCI（與 CLAUED.md 原模板 ③④⑦ 不同軌）。
 > 探勘日期基準：2026-07-16；ScummVM 原始碼版本 2026.2.1git（commit cb8802d6）。
