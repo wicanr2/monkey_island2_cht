@@ -57,6 +57,14 @@
   .verdict{margin-top:12px;font-size:15px;min-height:24px;font-weight:600}
   .verdict.ok{color:#2e6b2e}.verdict.no{color:var(--accent)}
   .chhint{font-size:13px;color:#8a7448;margin-top:8px}
+  .guide .gintro{font-size:15px;margin:2px 0 14px}
+  .gg{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+  .gcard{display:flex;gap:10px;align-items:center;background:#f4ecd0;border:1px solid #c3ac72;border-radius:10px;padding:9px 11px}
+  .gcard .gl{font-family:"DejaVu Serif",serif;font-size:22px;font-weight:700;color:var(--accent);width:22px;text-align:center;flex:none}
+  .gcard .gn{font-size:13.5px;line-height:1.45}
+  .gcard .gn .zh{color:var(--ink);font-weight:600}
+  .gcard .gn .en{color:#8a7448;font-size:11.5px}
+  .gcard .gn .lay{color:#a06a1a;font-size:11px;letter-spacing:.02em}
   footer{margin-top:34px;font-size:12.5px;color:#7c6236;border-top:1px solid var(--line);padding-top:14px}
   footer a{color:var(--accent)}
   a.back{color:var(--accent);font-size:14px;text-decoration:none}
@@ -118,6 +126,17 @@
     </div>
   </div>
 
+  <div class="panel guide">
+    <h2>巫毒配料圖鑑</h2>
+    <p class="gintro">
+      遊戲的防拷考題是這樣的：畫面給你<b>一道配方</b>（例如「木腿腐爛」），外加<b>兩個配料圖案</b>——
+      一個要在轉盤<b>下盤</b>外圈找、一個在<b>上盤</b>外圈找。把這兩個圖案轉到對齊，配方視窗就會顯示密碼。
+      這 15 種配料每個都有兩個名字：下盤一個、上盤一個，全是巫毒教一本正經的「獨門材料」。名稱依公開資料整理，並以遊戲實際中文（如「致命毒蕈」「木腿亮光劑」）校準。
+    </p>
+    <div id="guideGrid" class="gg"></div>
+    <p class="chhint">上面那張轉盤的外圈就印著這些圖案：<b>下盤一圈、上盤一圈</b>。轉轉看，把某個圖案轉到最上方的指標，就是在「找配料」。</p>
+  </div>
+
   <footer>
     <p><a class="back" href="../../">← 回中文化專案</a></p>
     <p>本頁為《Monkey Island 2: LeChuck's Revenge》玩家社群用於<b>懷舊與教學</b>的密碼盤模擬器，轉盤圖為實體 Mix 'N' Mojo 轉盤原圖。
@@ -149,6 +168,33 @@ const RECIPES = [
   {en:"Worms",zh:"蛔蟲"},{en:"Gout",zh:"痛風"},{en:"Scurvy",zh:"壞血病"},{en:"Warts",zh:"疣"},
   {en:"Trench Mouth",zh:"戰壕口炎"},{en:"Tattoo Rash",zh:"刺青疹"},{en:"Peg Leg Rot",zh:"義肢腐病"}
 ];
+/* 15 種配料:下盤(bottom=w1,每字母第一名)/上盤(top=w2,第二名)。中文以遊戲實際用字校準。*/
+const INGREDIENTS = [
+  {L:"A", bz:"死貓",     be:"Dead Cats",              tz:"蛇汗",       te:"CC of Snake Sweat"},
+  {L:"B", bz:"口氣糖",   be:"Breath Mints",           tz:"格羅格酒",   te:"Mugs of Grog"},
+  {L:"C", bz:"味精",     be:"Sprinkles of MSG",       tz:"用過的手帕", te:"Used Hankies"},
+  {L:"D", bz:"螃蟹頭皮", be:"Crab Scalps",            tz:"巫毒小幫手", te:"Box of Voodoo Helper"},
+  {L:"E", bz:"蝙蝠蠟",   be:"Globs of Bat Wax",       tz:"蜘蛛肺",     te:"Spider Lungs"},
+  {L:"F", bz:"毛球",     be:"Hair Balls",             tz:"豬腳",       te:"Pig Feet"},
+  {L:"G", bz:"方糖咖啡", be:"Coffee Cup w/Sugar Cubes",tz:"臭鼬萃取",  te:"Drops of Skunk Extract"},
+  {L:"H", bz:"致命毒蕈", be:"Deadly Toadstool",       tz:"貓頭鷹食繭", te:"Owl Pellets"},
+  {L:"I", bz:"秋葵",     be:"Bushels of Okra",        tz:"嚼過的口香糖",te:"Wads of Pre-Chewed Gum"},
+  {L:"J", bz:"毒橡樹",   be:"Sprigs of Poison Oak",   tz:"口水",       te:"Gobs of Spit"},
+  {L:"K", bz:"掘墓人的襪子",be:"Grave Digger's Socks",tz:"鯊魚唇",     te:"Sharklips"},
+  {L:"L", bz:"脹壁蝨",   be:"Bloated Ticks",          tz:"魚尾",       te:"Fishtails"},
+  {L:"M", bz:"腋臭男",   be:"Man with Smelly Armpits",tz:"木腿亮光劑", te:"Squirts of Peg Leg Polish"},
+  {L:"N", bz:"鴨腳",     be:"Duck Feet",              tz:"起司捲",     te:"Cheese Squigglies"},
+  {L:"O", bz:"犀牛趾甲", be:"Rhinoceros Toenails",    tz:"水果雞尾酒", te:"Servings of Fruit Cocktail"},
+];
+function renderGuide(){
+  const g=document.getElementById("guideGrid");
+  g.innerHTML=INGREDIENTS.map(x=>
+    `<div class="gcard"><div class="gl">${x.L}</div><div class="gn">`+
+    `<div><span class="lay">下盤</span> <span class="zh">${x.bz}</span> <span class="en">${x.be}</span></div>`+
+    `<div><span class="lay">上盤</span> <span class="zh">${x.tz}</span> <span class="en">${x.te}</span></div>`+
+    `</div></div>`).join("");
+}
+
 const N=15, STEP=24;
 /* 校準:底盤 0° 時,視窗顯示第 5 組(index 4);CSS 順時針每 +24° → 組序 +1 */
 const BASE=4;
@@ -220,7 +266,7 @@ document.getElementById("chNew").onclick=newChallenge;
 document.getElementById("chInput").addEventListener("keydown",e=>{ if(e.key==="Enter")check(); });
 
 /* 啟動 */
-apply(); renderNumbers(); newChallenge();
+apply(); renderNumbers(); newChallenge(); renderGuide();
 </script>
 </body>
 </html>
