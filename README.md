@@ -3,9 +3,9 @@
 > Monkey Island 2: LeChuck's Revenge（1991，LucasArts）繁體中文化專案
 > 引擎：LucasArts SCUMM v5（ScummVM `monkey2`）。社群非官方作品，與 LucasArts / Disney 無關聯。
 
-[![實機遊玩：懸崖吊繩開場與繁體中文對白（點擊看完整宣傳影片）](docs/screenshots/mi2_cht_promo.gif)](https://youtu.be/a2q0RNV6Uj0)
+[![實機遊玩：懸崖吊繩開場與繁體中文對白（點擊看完整宣傳影片）](docs/screenshots/mi2_cht_promo.gif)](https://youtu.be/n0i_4B458qQ)
 
-*實機錄影（原版 ScummVM 執行繁中版）：經典的懸崖吊繩開場，蓋布拉許與艾蓐妮的對白全繁體中文；九個動詞的指令表、物品欄、每一句敘述也都是中文。* ▶ **完整宣傳影片（含原版配樂）：<https://youtu.be/a2q0RNV6Uj0>**（點上方 GIF 也可直達）
+*實機錄影（原版 ScummVM 執行繁中版）：經典的懸崖吊繩開場，蓋布拉許與艾蓐妮的對白全繁體中文；九個動詞的指令表、物品欄、每一句敘述也都是中文。* ▶ **完整宣傳影片（含原版配樂）：<https://youtu.be/n0i_4B458qQ>**（點上方 GIF 也可直達）
 
 > 🎡 **線上試玩密碼盤**：不用裝遊戲，直接在瀏覽器轉那張當年的巫毒轉盤 →
 > **<https://wicanr2.github.io/monkey_island2_cht/mixnmojo/>**
