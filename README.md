@@ -10,6 +10,7 @@
 > 🎡 **線上試玩密碼盤**：不用裝遊戲，直接在瀏覽器轉那張當年的巫毒轉盤 →
 > **<https://wicanr2.github.io/monkey_island2_cht/mixnmojo/>**
 > （用實體轉盤原圖做的，密碼直接從上盤透明視窗透出來，跟你手上那張紙盤一模一樣。）
+> ⬇️ **想離線收藏？下載離線版 zip**（解壓雙擊 `index.html` 即可，無需網路）→ **[Releases](https://github.com/wicanr2/monkey_island2_cht/releases/tag/mixnmojo-offline-v1)**
 
 **目錄**：[寫在前面](#寫在前面) · [蓋布拉許回來了](#故事鉤子) · [軟體世界與那把鑰匙圈萬用刀](#軟體世界) · [人物・地名譯名對照](#譯名對照) · [巫毒配方轉盤](#防拷轉盤) · [這次中文化做了什麼](#中文化做了什麼) · [技術深潛](#技術深潛)（[一鍵重建](#一鍵重建) · [目錄結構](#目錄結構) · [版權](#版權)）· [怎麼玩](#怎麼玩) · [致謝](#致謝)
 
@@ -104,6 +105,8 @@
 > 🎡 **<https://wicanr2.github.io/monkey_island2_cht/mixnmojo/>**
 
 底盤與上盤都是真正的 Mix 'N' Mojo 轉盤掃描圖，密碼數字直接從上盤的透明視窗透出來——跟你手上那張紙盤一模一樣；15 個位置逐格對應公開答案表，還附一個模擬遊戲考題的挑戰模式。（原始碼在 [`docs/mixnmojo/`](docs/mixnmojo/index.html)，本機也可直接用瀏覽器開 `docs/mixnmojo/index.html`。）
+
+想離線收藏或分享給沒網路的朋友？[**下載離線版 zip**](https://github.com/wicanr2/monkey_island2_cht/releases/tag/mixnmojo-offline-v1)（2.5 MB，內含轉盤網頁、兩張轉盤原圖、完整密碼對照表與說明；解壓後雙擊 `index.html` 即離線可玩）。
 
 ---
 
