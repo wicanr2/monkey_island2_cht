@@ -2,7 +2,7 @@
 
 本專案的「高清文字版」(hi-res text edition)使用**修改過的 ScummVM**。依 GPLv3+「accompanying source」要求,此處說明改動內容;完整改動見同目錄 `scummvm-mi2-hires.patch`。
 
-- **上游基底**:ScummVM,commit `cb8802d6f9e8d9453dd6b8e5c7987278a882b6e2`(版本 2026.2.1git)。
+- **上游基底**:ScummVM,commit `3d408ec3516f7c29314d8ae8fb7916f31c9cd9aa`(版本 2026.2.1git;Scott Percival "Revert DIRECTOR: Keep track of context when working with factories")。
 - **上游來源**:<https://github.com/scummvm/scummvm>(GPLv3+)。
 - **授權**:本修改同樣以 **GPLv3+** 釋出。
 

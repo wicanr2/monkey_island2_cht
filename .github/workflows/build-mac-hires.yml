@@ -13,11 +13,12 @@ jobs:
       - name: Checkout repo (取 patch + build script)
         uses: actions/checkout@v4
 
-      - name: Clone ScummVM @ base commit
+      - name: Fetch ScummVM @ base commit (官方 3d408ec3;本地 mirror 的 cb8802d6 = 此 commit)
         run: |
-          git clone --filter=blob:none https://github.com/scummvm/scummvm.git scummvm
-          cd scummvm
-          git checkout cb8802d6f9e8d9453dd6b8e5c7987278a882b6e2
+          git init scummvm && cd scummvm
+          git remote add origin https://github.com/scummvm/scummvm.git
+          git fetch --depth 1 origin 3d408ec3516f7c29314d8ae8fb7916f31c9cd9aa
+          git checkout FETCH_HEAD
 
       - name: Apply hi-res patch
         run: |
