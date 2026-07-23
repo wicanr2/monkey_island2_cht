@@ -45,6 +45,8 @@ for arch in arm64 x86_64; do
         --enable-mt32emu \
         --with-sdl-prefix="$P/bin" \
         --disable-fluidsynth --disable-flac --disable-png --disable-freetype2 \
+        --disable-jpeg --disable-gif --disable-mpeg2 --disable-vpx --disable-tremor \
+        --disable-mikmod --disable-openmpt --disable-fribidi --disable-retrowave \
         --disable-vorbis --disable-mad --disable-faad --disable-theoradec --disable-a52 \
         --disable-libcurl --disable-sndio --disable-timidity --disable-sparkle \
         --disable-eventrecorder
