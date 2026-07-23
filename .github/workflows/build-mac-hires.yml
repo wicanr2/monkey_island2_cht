@@ -1,0 +1,35 @@
+name: build-mac-mi2-hires
+# MI2 繁中「高清文字版」的 macOS universal binary(arm64+x86_64)。
+# clone 官方 ScummVM @ base commit → apply hi-res patch → per-arch build + lipo → artifact。
+# binary 是 GPLv3+(可公開);game 資料 + Roland ROM 不上 CI,由本機注入打包。
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14   # Apple Silicon M1,免費;universal 一次出雙弧,免碰已退役的 Intel runner
+    timeout-minutes: 60
+    steps:
+      - name: Checkout repo (取 patch + build script)
+        uses: actions/checkout@v4
+
+      - name: Clone ScummVM @ base commit
+        run: |
+          git clone --filter=blob:none https://github.com/scummvm/scummvm.git scummvm
+          cd scummvm
+          git checkout cb8802d6f9e8d9453dd6b8e5c7987278a882b6e2
+
+      - name: Apply hi-res patch
+        run: |
+          cd scummvm
+          git apply --verbose "$GITHUB_WORKSPACE/tools/hires/scummvm-mi2-hires.patch"
+
+      - name: Build universal binary
+        run: bash tools/hires/build-mac.sh
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mi2-cht-hires-macos
+          path: dist/mi2-cht-hires-macos-app.tar.gz
+          retention-days: 7

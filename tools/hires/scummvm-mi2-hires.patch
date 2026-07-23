@@ -1,0 +1,122 @@
+--- a/engines/scumm/charset.cpp
++++ b/engines/scumm/charset.cpp
+@@ -134,7 +134,9 @@
+ 		if (fontFile && openFile(fp, fontFile)) {
+ 			debug(2, "Loading CJK Font");
+ 			_useCJKMode = true;
+-			_textSurfaceMultiplier = 1; // No multiplication here
++			// [hi-res 中文版] MONKEY2 ZH_CHN 開 2x text surface(640x400),中文字高解析。
++			// 其他 ZH_CHN 遊戲維持 1x(12x12),不受影響。
++			_textSurfaceMultiplier = (_game.id == GID_MONKEY2 && _language == Common::ZH_CHN) ? 2 : 1;
+ 
+ 			switch (_language) {
+ 			case Common::KO_KOR:
+@@ -154,8 +156,15 @@
+ 				_newLineCharacter = 0x21;
+ 				break;
+ 			case Common::ZH_CHN:
+-				_2byteWidth = 12;
+-				_2byteHeight = 12;
++				// [hi-res 中文版] MONKEY2 用 24x24 原生點陣字,配合下方 _textSurfaceMultiplier=2:
++				// 中文字以高解析畫在 640x400 text surface,底圖 nearest 放大 → 字清晰、排版邏輯不變。
++				if (_game.id == GID_MONKEY2) {
++					_2byteWidth = 24;
++					_2byteHeight = 24;
++				} else {
++					_2byteWidth = 12;
++					_2byteHeight = 12;
++				}
+ 				_newLineCharacter = 0x21;
+ 				break;
+ 			default:
+@@ -1124,8 +1133,14 @@
+ 	_top += _offsY;
+ 	_left += _offsX;
+ 
+-	if (_left + _origWidth > _right + 1 || _left < 0) {
+-		_left += _origWidth;
++	// [hi-res 中文版] 2byte 字型是 24x24(2x 點陣),但排版/游標推進要用「邏輯寬」(=24/2=12),
++	// 否則一行字數減半、破版。實際畫字時才用 24x24 高解析(見 printCharIntern 座標 *m)。
++	int cjkAdvW = _origWidth;
++	if (is2byte && _vm->_game.platform != Common::kPlatformFMTowns && _vm->_textSurfaceMultiplier > 1)
++		cjkAdvW = _origWidth / _vm->_textSurfaceMultiplier;
++
++	if (_left + cjkAdvW > _right + 1 || _left < 0) {
++		_left += cjkAdvW;
+ 		_top -= _offsY;
+ 		return;
+ 	}
+@@ -1199,7 +1214,8 @@
+ 	if ((_vm->_language == Common::ZH_TWN || _vm->_language == Common::KO_KOR) && is2byte)
+ 		_origWidth++;
+ 
+-	_left += _origWidth;
++	// [hi-res 中文版] 用邏輯寬推進(見上方 cjkAdvW),而非 24x24 點陣寬。
++	_left += cjkAdvW;
+ 	if (is2byte)
+ 		_left += _cjkSpacing;
+ 
+@@ -1286,9 +1302,16 @@
+ 			drawTop = _top - _vm->_screenTop;
+ 		}
+ 
+-		if (is2byte && _vm->_game.platform != Common::kPlatformFMTowns)
+-			drawBits1(dstSurface, (ignoreCharsetMask || !vs->hasTwoBuffers) ? _left + vs->xstart : _left, drawTop, charPtr, drawTop, origWidth, origHeight);
+-		else
++		if (is2byte && _vm->_game.platform != Common::kPlatformFMTowns) {
++			int tsm = _vm->_textSurfaceMultiplier;
++			if (ignoreCharsetMask || !vs->hasTwoBuffers) {
++				drawBits1(dstSurface, _left + vs->xstart, drawTop, charPtr, drawTop, origWidth, origHeight);
++			} else {
++				// [hi-res 中文版] dstSurface 是 2x 的 _textSurface(見上方 1274-1275),
++				// 座標 *tsm 才對齊;origWidth/origHeight=24 → 24x24 高解析畫進 2x surface。
++				drawBits1(dstSurface, _left * tsm, drawTop * tsm, charPtr, drawTop * tsm, origWidth, origHeight);
++			}
++		} else
+ 			drawBitsN(dstSurface, dstPtr, charPtr, *_fontPtr, drawTop, origWidth, origHeight);
+ 
+ 		if (_blitAlso && vs->hasTwoBuffers) {
+--- a/engines/scumm/gfx.cpp
++++ b/engines/scumm/gfx.cpp
+@@ -676,6 +676,30 @@
+ 	int pitch = vs->pitch;
+ 	vsPitch = vs->pitch - width * vs->format.bytesPerPixel;
+ 
++	// [hi-res 中文版] 非 towns/mac 的 CPU 合成迴圈(下方)假設「底圖與 text surface 同解析度」。
++	// m=2 時先把 1x 底圖 nearest 放大到 2x 暫存 buffer,src 指向它、vsPitch 歸零,
++	// 讓既有迴圈與 2x _textSurface 正確逐像素疊合。只處理 8bpp CLUT8(DOS VGA)。
++	static byte *s_hiresUpscaleBuf = nullptr;
++	static int s_hiresUpscaleSz = 0;
++	if (_useCJKMode && m == 2 && _game.platform != Common::kPlatformFMTowns && !_macScreen
++			&& _outputPixelFormat.bytesPerPixel != 2 && vs->format.bytesPerPixel == 1) {
++		int dw = width * m, dh = height * m, need = dw * dh;
++		if (need > s_hiresUpscaleSz) {
++			free(s_hiresUpscaleBuf);
++			s_hiresUpscaleBuf = (byte *)malloc(need);
++			s_hiresUpscaleSz = need;
++		}
++		const byte *sp = (const byte *)src;
++		for (int yy = 0; yy < dh; ++yy) {
++			const byte *srow = sp + (yy / m) * vs->pitch;
++			byte *drow = s_hiresUpscaleBuf + yy * dw;
++			for (int xx = 0; xx < dw; ++xx)
++				drow[xx] = srow[xx / m];
++		}
++		src = s_hiresUpscaleBuf;
++		vsPitch = 0; // 緊湊 buffer,每列剛好 dw = width*m
++	}
++
+ 	// In MM NES If we're repainting the entire screen, just make everything black
+ 	if ((_game.platform == Common::kPlatformNES) && width == 256 && height == 240) {
+ 		_system->fillScreen(0x1d);
+@@ -1252,7 +1276,9 @@
+ 			} else
+ #endif
+ 			{
+-				byte *mask = (byte *)_textSurface.getBasePtr(rect.left, rect.top - _screenTop);
++				// [hi-res 中文版] 座標也要 *m,否則 m=2 時清除起點在 1x 位置、字畫在 2x 位置,
++				// 舊字清不掉會累積成亂碼(比照 towns 1287 / mac 1293 的 rect.left * m)。
++				byte *mask = (byte *)_textSurface.getBasePtr(rect.left * _textSurfaceMultiplier, (rect.top - _screenTop) * _textSurfaceMultiplier);
+ 				fill(mask, _textSurface.pitch, CHARSET_MASK_TRANSPARENCY, width * _textSurfaceMultiplier, height * _textSurfaceMultiplier, _textSurface.format.bytesPerPixel);
+ 			}
+ 		}
